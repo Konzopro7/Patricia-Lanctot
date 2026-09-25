@@ -36,3 +36,34 @@
     document.querySelector('#contact-form').addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;const status=document.querySelector('#form-status');if(!form.reportValidity())return;if(form.elements.website.value){status.textContent='';return}status.textContent='Merci. Le formulaire est prêt à être relié à un service d’envoi. Pour le moment, veuillez nous joindre par téléphone ou par courriel.';form.reset()});
     document.querySelector('#newsletter-form').addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;if(!form.reportValidity())return;const email=form.elements.email.value.trim();const subject=encodeURIComponent('Inscription \u00e0 l\u2019infolettre');const body=encodeURIComponent(`Bonjour Patricia,\n\nJe souhaite m\u2019inscrire \u00e0 votre infolettre.\n\nMon adresse courriel : ${email}\n\nMerci !`);document.querySelector('#newsletter-status').textContent='Votre application courriel va s\u2019ouvrir avec une demande d\u2019inscription pr\u00e9remplie.';window.location.href=`mailto:Patricialanctot@hotmail.com?subject=${subject}&body=${body}`});
     document.querySelector('#privacy-link').addEventListener('click',event=>{event.preventDefault();document.querySelector('#form-status').textContent='Les renseignements transmis par courriel ou formulaire doivent être utilisés uniquement pour répondre à votre demande. Aucun backend de collecte n’est actuellement configuré.';document.querySelector('#contact-form').scrollIntoView({behavior:'smooth',block:'center'})});
+
+  const cookieBanner=document.querySelector('#cookie-banner');
+  const cookieAccept=document.querySelector('#cookie-accept');
+  const cookieReject=document.querySelector('#cookie-reject');
+  const mapFrame=document.querySelector('#google-map');
+  const consentName='patricia_maps_consent';
+  const consentPath=window.location.pathname.startsWith('/Patricia-Lanctot/')?'/Patricia-Lanctot/':'/';
+  function readCookie(name){return document.cookie.split('; ').find(item=>item.startsWith(`${name}=`))?.split('=')[1]||''}
+  function activateMap(){
+    if(!mapFrame||mapFrame.querySelector('iframe'))return;
+    const iframe=document.createElement('iframe');
+    iframe.src=mapFrame.dataset.mapSrc;
+    iframe.title='Google Maps - 12 chemin des Lucioles, Saint-Hippolyte';
+    iframe.width='600';iframe.height='450';iframe.loading='lazy';iframe.allowFullscreen=true;
+    iframe.referrerPolicy='strict-origin-when-cross-origin';
+    mapFrame.replaceChildren(iframe);
+  }
+  function saveMapChoice(choice){
+    document.cookie=`${consentName}=${choice}; Max-Age=31536000; Path=${consentPath}; SameSite=Lax; Secure`;
+    cookieBanner.hidden=true;
+    if(choice==='accepted')activateMap();
+  }
+  const existingChoice=readCookie(consentName);
+  if(existingChoice==='accepted'){cookieBanner.hidden=true;activateMap()}
+  else if(existingChoice==='rejected')cookieBanner.hidden=true;
+  cookieAccept.addEventListener('click',()=>saveMapChoice('accepted'));
+  cookieReject.addEventListener('click',()=>saveMapChoice('rejected'));
+  document.querySelector('#map-activate').addEventListener('click',()=>saveMapChoice('accepted'));
+  document.querySelectorAll('#cookie-settings').forEach(link=>link.addEventListener('click',event=>{
+    event.preventDefault();cookieBanner.hidden=false;cookieAccept.focus({preventScroll:true});
+  }));
