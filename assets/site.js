@@ -34,9 +34,8 @@
     serviceSelect.addEventListener('change',()=>prefillServiceMessage(serviceSelect.value));
     const revealItems=document.querySelectorAll('[data-reveal]');
     if('IntersectionObserver' in window&&!window.matchMedia('(prefers-reduced-motion: reduce)').matches){const observer=new IntersectionObserver(entries=>entries.forEach(entry=>{if(entry.isIntersecting){entry.target.classList.add('visible');observer.unobserve(entry.target)}}),{threshold:.12,rootMargin:'0px 0px -30px 0px'});revealItems.forEach(item=>observer.observe(item))}else revealItems.forEach(item=>item.classList.add('visible'));
-    document.querySelector('#contact-form').addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;const status=document.querySelector('#form-status');if(!form.reportValidity())return;if(form.elements.website.value){status.textContent='';return}status.textContent='Votre demande n\u2019a pas \u00e9t\u00e9 envoy\u00e9e : le formulaire n\u2019est pas encore reli\u00e9 \u00e0 un service d\u2019envoi. Vos renseignements restent dans le formulaire. Vous pouvez joindre Patricia par t\u00e9l\u00e9phone ou par courriel.'});
     document.querySelector('#newsletter-form').addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;if(!form.reportValidity())return;const email=form.elements.email.value.trim();const subject=encodeURIComponent('Inscription \u00e0 l\u2019infolettre');const body=encodeURIComponent(`Bonjour Patricia,\n\nJe souhaite m\u2019inscrire \u00e0 votre infolettre.\n\nMon adresse courriel : ${email}\n\nMerci !`);document.querySelector('#newsletter-status').textContent='Votre application courriel va s\u2019ouvrir avec une demande d\u2019inscription pr\u00e9remplie.';window.location.href=`mailto:Patricialanctot@hotmail.com?subject=${subject}&body=${body}`});
-    const appointmentForm=document.querySelector('#appointment-form');
+    const appointmentForm=document.querySelector('#contact-form');
     const appointmentDate=document.querySelector('#appointment-date');
     const today=new Date();
     const localToday=new Date(today.getTime()-today.getTimezoneOffset()*60000).toISOString().slice(0,10);
@@ -59,7 +58,7 @@
         'Date souhaitée : '+dateLabel,
         'Heure souhaitée : '+fields.time.value,
         'Mode de rencontre : '+fields.location.value,
-        'Précisions : '+(fields.notes.value.trim()||'Aucune'),
+        'Précisions : '+(fields.message.value.trim()||'Aucune'),
         '',
         'Je comprends que cette préférence doit être confirmée selon vos disponibilités.',
         '',
@@ -68,7 +67,7 @@
       document.querySelector('#appointment-status').textContent='Votre application courriel va s’ouvrir avec la demande. Vérifiez le message puis envoyez-le; Patricia vous confirmera le rendez-vous.';
       window.location.href='mailto:Patricialanctot@hotmail.com?subject='+subject+'&body='+body;
     });
-    document.querySelector('#privacy-link').addEventListener('click',event=>{event.preventDefault();document.querySelector('#form-status').textContent='Les renseignements transmis par courriel ou formulaire doivent être utilisés uniquement pour répondre à votre demande. Aucun backend de collecte n’est actuellement configuré.';document.querySelector('#contact-form').scrollIntoView({behavior:'smooth',block:'center'})});
+    document.querySelector('#privacy-link').addEventListener('click',event=>{event.preventDefault();document.querySelector('#appointment-status').textContent='Les renseignements transmis par courriel ou formulaire doivent être utilisés uniquement pour répondre à votre demande. Aucun backend de collecte n’est actuellement configuré.';document.querySelector('#contact-form').scrollIntoView({behavior:'smooth',block:'center'})});
 
     const onvioLink=document.querySelector('#onvio-link');
     const onvioPending=document.querySelector('#onvio-pending');
