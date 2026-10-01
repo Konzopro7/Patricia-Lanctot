@@ -38,6 +38,8 @@
     document.querySelector('#newsletter-form').addEventListener('submit',event=>{event.preventDefault();const form=event.currentTarget;if(!form.reportValidity())return;const email=form.elements.email.value.trim();const subject=encodeURIComponent('Inscription \u00e0 l\u2019infolettre');const body=encodeURIComponent(`Bonjour Patricia,\n\nJe souhaite m\u2019inscrire \u00e0 votre infolettre.\n\nMon adresse courriel : ${email}\n\nMerci !`);document.querySelector('#newsletter-status').textContent='Votre application courriel va s\u2019ouvrir avec une demande d\u2019inscription pr\u00e9remplie.';window.location.href=`mailto:Patricialanctot@hotmail.com?subject=${subject}&body=${body}`});
     const contactForm=document.querySelector('#contact-form');
     const appointmentDate=document.querySelector('#appointment-date');
+    const appointmentPhone=document.querySelector('#appointment-phone-field');
+    const serviceField=document.querySelector('#service');
     const schedulePanel=document.querySelector('#panel-appointment');
     const messagePanel=document.querySelector('#panel-message');
     const modeTabs=[...document.querySelectorAll('.contact-mode-tab')];
@@ -53,6 +55,8 @@
       schedulePanel.hidden=!isAppointment;
       messagePanel.hidden=isAppointment;
       appointmentDate.required=isAppointment;
+      appointmentPhone.hidden=!isAppointment;
+      serviceField.required=isAppointment;
       contactForm.elements.time.required=isAppointment;
       contactForm.elements.location.required=isAppointment;
       messageField.required=!isAppointment;
@@ -61,7 +65,7 @@
         tab.setAttribute('aria-selected',String(selected));
         tab.tabIndex=selected?0:-1;
       });
-      submitButton.innerHTML=isAppointment?'Préparer ma demande de rendez-vous <span aria-hidden="true">↗</span>':'Préparer mon message <span aria-hidden="true">↗</span>';
+      submitButton.innerHTML=isAppointment?'Demander un rendez-vous <span aria-hidden="true">→</span>':'Envoyer mon message <span aria-hidden="true">→</span>';
       submitNote.textContent=isAppointment?'Votre demande ouvrira votre application courriel. Patricia confirmera le rendez-vous selon ses disponibilités.':'Votre application courriel s’ouvrira avec votre message à Patricia.';
     }
     setContactMode('appointment');
@@ -102,9 +106,10 @@
           'Je comprends que cette préférence doit être confirmée selon vos disponibilités.','','Merci !'
         ];
       }else{
-        subject=encodeURIComponent('Demande d’information — '+fields.service.value);
+        const selectedService=fields.service.value.trim();
+        subject=encodeURIComponent('Demande d’information — '+(selectedService||'Patricia Lanctot'));
         bodyLines=[
-          'Bonjour Patricia,','','Je souhaite obtenir des renseignements concernant : '+fields.service.value+'.','',
+          'Bonjour Patricia,','',selectedService?'Je souhaite obtenir des renseignements concernant : '+selectedService+'.':'Je souhaite obtenir des renseignements sur vos services.','',
           'Nom : '+fields.name.value.trim(),
           'Courriel : '+fields.email.value.trim(),
           'Téléphone : '+(fields.phone.value.trim()||'Non fourni'),'',
