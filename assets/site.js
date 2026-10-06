@@ -6,13 +6,19 @@
     menu.addEventListener('click',()=>{const open=menu.getAttribute('aria-expanded')!=='true';menu.setAttribute('aria-expanded',String(open));menu.setAttribute('aria-label',open?'Fermer le menu':'Ouvrir le menu');nav.classList.toggle('open',open)});
     nav.querySelectorAll('a').forEach(link=>link.addEventListener('click',()=>{nav.classList.remove('open');menu.setAttribute('aria-expanded','false');menu.setAttribute('aria-label','Ouvrir le menu')}));
     const serviceIntros={
-      'D\u00e9claration d\u2019imp\u00f4ts':'ma d\u00e9claration d\u2019imp\u00f4ts',
-      'D\u00e9clarations T1 et/ou TP-1':'mes d\u00e9clarations f\u00e9d\u00e9rale T1 et qu\u00e9b\u00e9coise TP-1',
+      'Déclarations d’impôts de particuliers':'ma déclaration d’impôts de particulier',
+      'Crédits d’impôt':'les crédits d’impôt auxquels je pourrais avoir droit',
+      'Gains en capital':'l’imposition de mes gains en capital',
+      'Travailleurs autonomes':'mes besoins comptables et fiscaux comme travailleur autonome',
+      'Situations particulières':'une situation fiscale particulière',
+      'Estimations et calculs fiscaux':'une estimation ou un calcul fiscal',
+      'Autres formulaires spéciaux':'la préparation d’un formulaire particulier',
+      'Production de feuillets fiscaux':'la production de feuillets fiscaux',
+      'Déclarations d’impôts de sociétés':'la déclaration d’impôts de ma société',
       'Tenue de livres':'la tenue de mes livres comptables',
-      'Rapports de taxes':'mes d\u00e9clarations de TPS/TVQ',
-      'Revenus locatifs / gains en capital':'mes revenus locatifs ou mes gains en capital',
-      'Travailleur autonome':'mes besoins comptables et fiscaux comme travailleur autonome',
-      'Situation fiscale particuli\u00e8re':'une situation fiscale particuli\u00e8re'
+      'Rapports de taxes':'mes déclarations de TPS et TVQ',
+      'Déclarations d’impôts de fiducies':'une déclaration d’impôts de fiducie',
+      'Onvio':'mon accès à Onvio'
     };
     const serviceSelect=document.querySelector('#service');
     const messageField=document.querySelector('#message');
@@ -123,13 +129,11 @@
     document.querySelector('#privacy-link').addEventListener('click',event=>{event.preventDefault();document.querySelector('#appointment-status').textContent='Les renseignements transmis par courriel ou formulaire doivent être utilisés uniquement pour répondre à votre demande. Aucun backend de collecte n’est actuellement configuré.';document.querySelector('#contact-form').scrollIntoView({behavior:'smooth',block:'center'})});
 
     const onvioLink=document.querySelector('#onvio-link');
-    const onvioPending=document.querySelector('#onvio-pending');
     const onvioUrl=window.PATRICIA_SITE_CONFIG?.onvioUrl?.trim()||'';
     try{
       const parsedOnvioUrl=new URL(onvioUrl);
       if(parsedOnvioUrl.protocol==='https:'){
         onvioLink.href=parsedOnvioUrl.href;
         onvioLink.hidden=false;
-        onvioPending.hidden=true;
       }
     }catch{}
