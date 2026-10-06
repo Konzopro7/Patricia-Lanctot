@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="fr-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="robots" content="noindex,nofollow">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'none'; script-src 'self'; style-src 'self' https://fonts.googleapis.com; font-src 'self' https://fonts.gstatic.com; img-src 'self' data:; connect-src 'self'; form-action 'self'">
+  <title>Administration | Patricia Lanctot</title>
+  <link rel="icon" href="../favicon-tab.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Lora:wght@500;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="../assets/site.css">
+  <link rel="stylesheet" href="admin.css">
+  <script src="admin.js" defer></script>
+</head>
+<body>
+  <header class="admin-header"><div class="container admin-header-inner">
+    <a class="brand" href="../"><span class="brand-logo-frame"><img class="brand-mark" src="../favicon.png" alt="" width="49" height="49"></span><span class="brand-copy"><strong>Patricia Lanctot</strong><span>Espace administrateur</span></span></a>
+    <div class="admin-user" id="admin-user" hidden><span id="admin-identity"></span><button class="button button-outline" id="logout" type="button">Déconnexion</button></div>
+  </div></header>
+  <main class="container admin-main">
+    <section class="auth-card" id="login-view"><p class="eyebrow">Accès protégé</p><h1>Connexion</h1><p>Connectez-vous pour gérer les rendez-vous et les disponibilités.</p>
+      <form id="login-form" class="admin-form"><label>Courriel <input name="email" type="email" autocomplete="username" required></label><label>Mot de passe <input name="password" type="password" autocomplete="current-password" required></label><button class="button button-primary" type="submit">Se connecter</button></form>
+    </section>
+    <section class="auth-card" id="invite-view" hidden><p class="eyebrow">Invitation</p><h1>Créer votre accès</h1><p>Choisissez un mot de passe d’au moins 12 caractères.</p>
+      <form id="invite-form" class="admin-form"><label>Nouveau mot de passe <input name="password" type="password" autocomplete="new-password" minlength="12" required></label><button class="button button-primary" type="submit">Activer mon accès</button></form>
+    </section>
+    <div id="app-view" hidden>
+      <div class="admin-title"><div><p class="eyebrow">Administration</p><h1>Tableau de bord</h1></div><span class="admin-role" id="role-label"></span></div>
+      <nav class="admin-tabs" aria-label="Sections de l’administration">
+        <button type="button" data-tab="appointments" aria-current="page">Rendez-vous / Calendrier</button>
+        <button type="button" data-tab="availability" data-permission="availability">Disponibilités</button>
+        <button type="button" data-tab="team" data-permission="team">Équipe et accès</button>
+      </nav>
+      <section id="appointments-panel">
+        <div class="admin-stats" id="admin-stats"></div>
+        <div class="admin-panel">
+          <div class="admin-panel-head"><div><h2>Calendrier</h2><p>Les demandes en attente bloquent déjà leur créneau.</p></div><div class="calendar-controls"><button type="button" id="calendar-prev" aria-label="Période précédente">←</button><strong id="calendar-title"></strong><button type="button" id="calendar-next" aria-label="Période suivante">→</button></div></div>
+          <div class="calendar-views" role="group" aria-label="Vue du calendrier"><button type="button" data-view="month" class="selected">Mois</button><button type="button" data-view="week">Semaine</button><button type="button" data-view="day">Jour</button><button type="button" data-view="list">Liste</button></div>
+          <div class="admin-calendar" id="admin-calendar"></div>
+        </div>
+        <div class="admin-panel"><div class="admin-panel-head"><h2>Prochains rendez-vous</h2><div class="admin-filters"><input id="date-filter" type="date" aria-label="Filtrer par date"><input id="search" type="search" placeholder="Nom ou courriel" aria-label="Rechercher par nom ou courriel"><select id="status-filter" aria-label="Filtrer par statut"><option value="">Tous les statuts</option><option value="PENDING">En attente</option><option value="CONFIRMED">Confirmés</option><option value="REJECTED">Refusés</option><option value="CANCELLED">Annulés</option><option value="COMPLETED">Terminés</option></select><select id="service-filter" aria-label="Filtrer par service"><option value="">Tous les services</option></select></div></div><div class="appointment-list" id="appointment-list"></div></div>
+        <div class="admin-panel" id="appointment-editor" hidden><h2>Modifier un rendez-vous</h2><form id="appointment-form" class="admin-form admin-form-grid"><input type="hidden" name="id"><label>Prénom <input name="firstName" required></label><label>Nom <input name="lastName" required></label><label>Courriel <input type="email" name="email" required></label><label>Téléphone <input name="phone" required></label><label>Service <select name="service"><option>Déclarations d’impôts de particuliers</option><option>Crédits d’impôt</option><option>Gains en capital</option><option>Travailleurs autonomes</option><option>Situations particulières</option><option>Estimations et calculs fiscaux</option><option>Autres formulaires spéciaux</option><option>Production de feuillets fiscaux</option><option>Déclarations d’impôts de sociétés</option><option>Tenue de livres</option><option>Rapports de taxes</option><option>Déclarations d’impôts de fiducies</option><option>Onvio</option></select></label><label>Ville ou mode <select name="location"><option>Saint-Hippolyte</option><option>Sainte-Julienne</option><option>À distance</option></select></label><label>Date <input type="date" name="date" required></label><label>Heure <input type="time" name="time" step="900" required></label><label>Statut <select name="status"><option value="PENDING">En attente</option><option value="CONFIRMED">Confirmé</option><option value="REJECTED">Refusé</option><option value="CANCELLED">Annulé</option><option value="COMPLETED">Terminé</option></select></label><label class="admin-full">Message <textarea name="message" rows="3"></textarea></label><div class="admin-actions"><button class="button button-primary" type="submit">Enregistrer</button><button class="button button-outline" type="button" id="close-editor">Fermer</button></div></form></div>
+      </section>
+      <section id="availability-panel" hidden>
+        <div class="admin-panel"><h2>Durée et fuseau horaire</h2><form id="settings-form" class="admin-form admin-form-grid"><label>Durée par défaut <select name="duration"><option value="15">15 minutes</option><option value="30">30 minutes</option><option value="45">45 minutes</option><option value="60">60 minutes</option></select></label><label>Tampon entre rendez-vous <input name="buffer" type="number" min="0" max="60" step="5" required></label><label>Fuseau horaire <input name="timezone" required></label><button class="button button-primary" type="submit">Enregistrer</button></form></div>
+        <div class="admin-panel"><h2>Horaires hebdomadaires</h2><p>Ajoutez une plage par ligne. Les jours sans plage restent fermés.</p><form id="rule-form" class="admin-form admin-form-grid"><input type="hidden" name="id"><label>Jour <select name="weekday"><option value="1">Lundi</option><option value="2">Mardi</option><option value="3">Mercredi</option><option value="4">Jeudi</option><option value="5">Vendredi</option><option value="6">Samedi</option><option value="0">Dimanche</option></select></label><label>Début <input type="time" name="start" required></label><label>Fin <input type="time" name="end" required></label><button class="button button-primary" type="submit" id="rule-submit">Ajouter la plage</button><button class="button button-outline" type="button" id="rule-cancel" hidden>Annuler la modification</button></form><div id="rules-list" class="admin-records"></div></div>
+        <div class="admin-panel"><h2>Exceptions et congés</h2><p>Bloquez une heure, une journée ou une période. Vous pouvez aussi ouvrir une disponibilité exceptionnelle.</p><form id="exception-form" class="admin-form admin-form-grid"><label>Type <select name="kind"><option value="BLOCK">Indisponible</option><option value="OPEN">Disponible exceptionnellement</option></select></label><label>Début <input name="startDate" type="date" required><input name="startTime" type="time" required></label><label>Fin <input name="endDate" type="date" required><input name="endTime" type="time" required></label><label>Note <input name="note" maxlength="300"></label><button class="button button-primary" type="submit">Ajouter l’exception</button></form><div id="exceptions-list" class="admin-records"></div></div>
+      </section>
+      <section id="team-panel" hidden>
+        <div class="admin-panel"><h2>Ajouter une personne</h2><p>Une invitation de 48 heures sera créée. Seule la propriétaire peut gérer les accès.</p><form id="team-form" class="admin-form admin-form-grid"><label>Nom <input name="name" maxlength="100" required></label><label>Courriel <input name="email" type="email" required></label><label>Rôle <select name="role"><option value="ADMIN">Administrateur : rendez-vous et horaires</option><option value="STAFF">Équipe : rendez-vous</option><option value="VIEWER">Lecture seule</option></select></label><button class="button button-primary" type="submit">Créer l’invitation</button></form><div id="invite-link" class="invite-link" hidden></div></div>
+        <div class="admin-panel"><h2>Équipe et permissions</h2><div id="team-list" class="admin-records"></div></div>
+      </section>
+    </div>
+    <p class="admin-status" id="admin-status" role="status" aria-live="polite"></p>
+  </main>
+</body>
+</html>

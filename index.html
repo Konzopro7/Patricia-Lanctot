@@ -100,32 +100,41 @@
         <button class="contact-mode-tab" id="tab-message" type="button" role="tab" aria-selected="false" aria-controls="panel-message" tabindex="-1" data-contact-mode="message">Message</button>
         <button class="contact-mode-tab" id="tab-appointment" type="button" role="tab" aria-selected="true" aria-controls="panel-appointment" tabindex="0" data-contact-mode="appointment">Rendez-vous</button>
       </div>
-      <div class="booking-fields">
-        <div class="field"><label for="name">Nom *</label><input id="name" name="name" autocomplete="name" placeholder="Votre nom" required minlength="2"></div>
-        <div class="field"><label for="email">Courriel *</label><input id="email" name="email" type="email" autocomplete="email" placeholder="vous@exemple.com" required></div>
-        <div class="field booking-field-full" id="appointment-phone-field"><label for="phone">Téléphone</label><input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="514-000-0000"></div>
-      </div>
       <div class="mode-panel" id="panel-appointment" role="tabpanel" aria-labelledby="tab-appointment" tabindex="0">
+        <p class="booking-subtitle">Choisissez une date et une heure parmi les disponibilités réelles de Patricia.</p>
+        <div class="public-calendar">
+          <div class="public-calendar-head"><button type="button" id="booking-prev" aria-label="Mois précédent">←</button><strong id="booking-month"></strong><button type="button" id="booking-next" aria-label="Mois suivant">→</button></div>
+          <div class="public-calendar-grid public-weekdays" aria-hidden="true"><span>Lun</span><span>Mar</span><span>Mer</span><span>Jeu</span><span>Ven</span><span>Sam</span><span>Dim</span></div>
+          <div class="public-calendar-grid" id="booking-calendar" aria-label="Dates disponibles"></div>
+          <p class="calendar-status" id="calendar-status" role="status" aria-live="polite">Chargement des disponibilités…</p>
+        </div>
+        <input id="appointment-date" name="date" type="hidden">
+        <div class="field booking-field-full slot-field" id="slot-field" hidden><label for="appointment-time">Heure disponible *</label><select id="appointment-time" name="time"><option value="" selected disabled>Choisir une heure</option></select></div>
+        <div id="booking-details" hidden>
         <div class="booking-fields">
-          <div class="field"><label for="appointment-date">Date souhaitée *</label><input id="appointment-date" name="date" type="date" required></div>
-          <div class="field"><label for="appointment-time">Heure souhaitée *</label><input id="appointment-time" name="time" type="time" required></div>
           <div class="field booking-field-full"><label for="service">Besoin principal *</label><select id="service" name="service" required><option value="" selected disabled>Sélectionnez votre besoin principal</option><option>Déclarations d’impôts de particuliers</option><option>Crédits d’impôt</option><option>Gains en capital</option><option>Travailleurs autonomes</option><option>Situations particulières</option><option>Estimations et calculs fiscaux</option><option>Autres formulaires spéciaux</option><option>Production de feuillets fiscaux</option><option>Déclarations d’impôts de sociétés</option><option>Tenue de livres</option><option>Rapports de taxes</option><option>Déclarations d’impôts de fiducies</option><option>Onvio</option></select></div>
           <div class="field booking-field-full"><label for="appointment-location">Ville ou mode de rencontre *</label><select id="appointment-location" name="location" required><option value="" selected disabled>Choisir une option</option><option>Saint-Hippolyte</option><option>Sainte-Julienne</option><option>À distance</option></select></div>
+          <div class="field"><label for="booking-first-name">Prénom *</label><input id="booking-first-name" name="firstName" autocomplete="given-name" required minlength="2"></div>
+          <div class="field"><label for="booking-last-name">Nom *</label><input id="booking-last-name" name="lastName" autocomplete="family-name" required minlength="2"></div>
+          <div class="field"><label for="booking-email">Courriel *</label><input id="booking-email" name="email" type="email" autocomplete="email" required></div>
+          <div class="field"><label for="booking-phone">Téléphone *</label><input id="booking-phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" required></div>
           <div class="field booking-field-full"><label for="appointment-notes">Détails du besoin</label><textarea id="appointment-notes" name="notes" rows="4" placeholder="Précisez votre contexte et vos attentes pour le rendez-vous."></textarea></div>
+        </div>
+        <div class="booking-summary" id="booking-summary" aria-live="polite"><strong>Résumé de votre demande</strong><span id="booking-summary-text">Choisissez un service et une heure.</span></div>
         </div>
       </div>
       <div class="mode-panel" id="panel-message" role="tabpanel" aria-labelledby="tab-message" tabindex="0" hidden>
-        <div class="booking-fields"><div class="field booking-field-full"><label for="message">Message *</label><textarea id="message" name="message" minlength="10" required rows="5" placeholder="Décrivez brièvement votre besoin."></textarea></div></div>
+        <div class="booking-fields"><div class="field"><label for="message-first-name">Prénom *</label><input id="message-first-name" name="messageFirstName" autocomplete="given-name" required></div><div class="field"><label for="message-last-name">Nom *</label><input id="message-last-name" name="messageLastName" autocomplete="family-name" required></div><div class="field booking-field-full"><label for="message-email">Courriel *</label><input id="message-email" name="messageEmail" type="email" autocomplete="email" required></div><div class="field booking-field-full"><label for="message">Message *</label><textarea id="message" name="message" minlength="10" required rows="5" placeholder="Décrivez brièvement votre besoin."></textarea></div></div>
       </div>
       <div class="booking-submit"><button class="button button-primary" id="contact-submit" type="submit">Préparer ma demande <span aria-hidden="true">↗</span></button><p id="contact-submit-note">Patricia confirmera le rendez-vous selon ses disponibilités.</p></div>
       <p class="booking-status" id="appointment-status" role="status" aria-live="polite"></p>
-      <p class="booking-fallback">Si votre application courriel ne s’ouvre pas, écrivez à <a href="mailto:Patricialanctot@hotmail.com">Patricialanctot@hotmail.com</a>.</p>
+      <p class="booking-fallback" id="contact-fallback">Si votre application courriel ne s’ouvre pas, écrivez à <a href="mailto:Patricialanctot@hotmail.com">Patricialanctot@hotmail.com</a>.</p>
     </form><a class="contact-map" href="https://www.google.com/maps/search/?api=1&amp;query=Saint-Hippolyte%2C%20Quebec" target="_blank" rel="noopener noreferrer"><span class="contact-map-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M20 10c0 5-8 11-8 11S4 15 4 10a8 8 0 1 1 16 0Z"/><circle cx="12" cy="10" r="2.5"/></svg></span><span><strong>Saint-Hippolyte, Qu&eacute;bec</strong><small>Consulter la carte de la ville dans Google Maps</small></span><span class="contact-map-arrow" aria-hidden="true">&#8599;</span></a></div></section>
 
 
   </main>
   <section class="newsletter" id="infolettre" aria-labelledby="newsletter-title"><div class="container"><div class="newsletter-panel" data-reveal><div class="newsletter-copy"><p class="eyebrow">Infolettre</p><h2 id="newsletter-title">Des nouvelles utiles, au bon moment.</h2><p>Recevez des conseils et rappels pratiques sur la comptabilit&eacute; et la fiscalit&eacute;, directement dans votre bo&icirc;te courriel.</p></div><form class="newsletter-form" id="newsletter-form"><label class="sr-only" for="newsletter-email">Votre adresse courriel</label><div class="newsletter-fields"><input id="newsletter-email" name="email" type="email" autocomplete="email" placeholder="Votre adresse courriel" required><button class="button button-primary" type="submit">M&#39;inscrire <span aria-hidden="true">&rarr;</span></button></div><p class="newsletter-note">L&#39;inscription ouvre votre application courriel pour envoyer votre demande &agrave; Patricia.</p><p class="newsletter-status" id="newsletter-status" role="status" aria-live="polite"></p></form></div></div></section>
-  <footer class="site-footer"><div class="container footer-inner"><div class="copyright">© 2026 <strong>Patricia Lanctot</strong> – Comptable-Fiscaliste<br>Saint-Hippolyte et Sainte-Julienne, Québec</div><nav class="footer-nav" aria-label="Navigation pied de page"><a href="#services">Services</a><a href="#apropos">À propos</a><a href="#contact">Contact</a><a href="#infolettre">Infolettre</a><a href="#confidentialite" id="privacy-link">Politique de confidentialité</a></nav><a class="agency" href="#" aria-label="Konzotech Agency (lien à configurer)">Site réalisé par Konzotech Agency</a></div></footer>
+  <footer class="site-footer"><div class="container footer-inner"><div class="copyright">© 2026 <strong>Patricia Lanctot</strong> – Comptable-Fiscaliste<br>Saint-Hippolyte et Sainte-Julienne, Québec</div><nav class="footer-nav" aria-label="Navigation pied de page"><a href="#services">Services</a><a href="#apropos">À propos</a><a href="#contact">Contact</a><a href="#infolettre">Infolettre</a><a href="/admin/" id="admin-link" hidden>Administration</a><a href="#confidentialite" id="privacy-link">Politique de confidentialité</a></nav><a class="agency" href="#" aria-label="Konzotech Agency (lien à configurer)">Site réalisé par Konzotech Agency</a></div></footer>
   <script src="assets/site-config.js" defer></script>
   <script src="assets/site.js" defer></script>
 </body>

@@ -1,0 +1,17 @@
+{
+  "name": "patricia-lanctot-site",
+  "private": true,
+  "version": "1.0.0",
+  "type": "module",
+  "engines": {
+    "node": ">=24.0.0"
+  },
+  "scripts": {
+    "start": "node --env-file-if-exists=.env server/index.js",
+    "setup-owner": "node --env-file-if-exists=.env server/setup-owner.js",
+    "test": "node --test server/*.test.js"
+  },
+  "dependencies": {
+    "nodemailer": "^10.0.15"
+  }
+}
