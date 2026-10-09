@@ -22,6 +22,7 @@
     'Déclarations d’impôts de particuliers':'ma déclaration d’impôts de particulier',
     'Crédits d’impôt':'les crédits d’impôt auxquels je pourrais avoir droit',
     'Gains en capital':'l’imposition de mes gains en capital',
+    'Revenus locatifs':'la déclaration de mes revenus locatifs',
     'Travailleurs autonomes':'mes besoins comptables et fiscaux comme travailleur autonome',
     'Situations particulières':'une situation fiscale particulière',
     'Estimations et calculs fiscaux':'une estimation ou un calcul fiscal',

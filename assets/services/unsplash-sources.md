@@ -5,7 +5,7 @@ Photos téléchargées et recadrées depuis Unsplash pour les cartes de services
 | Fichier | Photo source |
 | --- | --- |
 | onvio-client-portal.jpg | [Gabriel Weyand](https://unsplash.com/photos/person-working-on-a-laptop-at-a-desk-pPpUCaudT5Q) |
-| credits-impot.jpg | [Sasun Bughdaryan](https://unsplash.com/photos/calculator-piggy-bank-and-house-model-on-blue-background-mjD3YZhGt74) |
+| credits-impot.jpg | [Matthew Lancaster](https://unsplash.com/es/fotos/monedas-redondas-de-oro-sobre-mesa-de-madera-marron-OtfnlTw0lH4) |
 | gains-capital.jpg | [Jakub Żerdzicki](https://unsplash.com/photos/office-desk-with-smartphone-and-financial-charts-heiYgqp0Tsk) |
 | travailleurs-autonomes-unsplash.jpg | [Vitaly Gariev](https://unsplash.com/photos/person-typing-on-a-laptop-at-a-wooden-desk-w7LtjYoS6Kk) |
 | situations-particulieres-unsplash.jpg | [Olena Kholina](https://unsplash.com/photos/two-people-reviewing-documents-at-a-table-MhqUBTxQ3Hw) |
@@ -15,6 +15,6 @@ Photos téléchargées et recadrées depuis Unsplash pour les cartes de services
 | impots-societes.jpg | [Vitaly Gariev](https://unsplash.com/photos/three-people-in-a-business-meeting-discussing-documents-1uf2JCPFAkU) |
 | tenue-livres-unsplash.jpg | [Bluestonex](https://unsplash.com/photos/hands-typing-on-a-laptop-with-a-spreadsheet-on-screen-iDqNlr1Y1_w) |
 | rapports-taxes-unsplash.jpg | [Mediamodifier](https://unsplash.com/photos/black-calculator-beside-black-pen-on-white-printer-paper-I3HPUolh5hA) |
-| impots-fiducies.jpg | [Melinda Gimpel](https://unsplash.com/photos/last-will-and-testament-white-printer-paper-wkfZyteTMOA) |
 
 La carte « Déclarations d’impôts de particuliers » garde l’illustration canadienne existante `declarations-canada.jpg`, conformément au document de la cliente.
+La carte « Déclarations d’impôts de fiducies » réutilise cette illustration canadienne et francophone afin d’éviter les documents de succession anglophones.
