@@ -1,0 +1,82 @@
+name: Déployer sur cPanel
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: deploy-cpanel-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    name: Déployer l’application Node.js
+    runs-on: ubuntu-latest
+    env:
+      CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+      CPANEL_USER: ${{ secrets.CPANEL_USER }}
+      CPANEL_SSH_PORT: ${{ secrets.CPANEL_SSH_PORT }}
+      CPANEL_SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+      CPANEL_KNOWN_HOSTS: ${{ secrets.CPANEL_KNOWN_HOSTS }}
+    steps:
+      - name: Vérifier la configuration de déploiement
+        id: config
+        shell: bash
+        run: |
+          if [[ -n "$CPANEL_HOST" && -n "$CPANEL_USER" && -n "$CPANEL_SSH_PRIVATE_KEY" && -n "$CPANEL_KNOWN_HOSTS" ]]; then
+            echo "ready=true" >> "$GITHUB_OUTPUT"
+          else
+            echo "ready=false" >> "$GITHUB_OUTPUT"
+            echo "Déploiement ignoré : ajoutez les secrets CPANEL_HOST, CPANEL_USER, CPANEL_SSH_PRIVATE_KEY et CPANEL_KNOWN_HOSTS dans GitHub." >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Récupérer le dépôt
+        if: steps.config.outputs.ready == 'true'
+        uses: actions/checkout@v4
+
+      - name: Configurer la connexion SSH
+        if: steps.config.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          install -m 700 -d ~/.ssh
+          printf '%s\n' "$CPANEL_SSH_PRIVATE_KEY" > ~/.ssh/cpanel_deploy_key
+          chmod 600 ~/.ssh/cpanel_deploy_key
+          printf '%s\n' "$CPANEL_KNOWN_HOSTS" > ~/.ssh/known_hosts
+          chmod 600 ~/.ssh/known_hosts
+          echo "CPANEL_SSH_PORT=${CPANEL_SSH_PORT:-22}" >> "$GITHUB_ENV"
+
+      - name: Synchroniser les fichiers de l’application
+        if: steps.config.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          rsync -az \
+            -e "ssh -i ~/.ssh/cpanel_deploy_key -p ${CPANEL_SSH_PORT:-22} -o IdentitiesOnly=yes" \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            --exclude='node_modules/' \
+            --exclude='.env' \
+            --exclude='server/data/' \
+            --exclude='*.sqlite' \
+            --exclude='*.sqlite-shm' \
+            --exclude='*.sqlite-wal' \
+            --exclude='*.zip' \
+            ./ "$CPANEL_USER@$CPANEL_HOST:/home/konzotec/patricialanctot-app/"
+
+      - name: Installer les dépendances et redémarrer Node.js
+        if: steps.config.outputs.ready == 'true'
+        shell: bash
+        run: |
+          set -euo pipefail
+          ssh -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o IdentitiesOnly=yes "$CPANEL_USER@$CPANEL_HOST" \
+            "source /home/konzotec/nodevenv/patricialanctot-app/22/bin/activate && cd /home/konzotec/patricialanctot-app && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"
+
+      - name: Résumé
+        if: steps.config.outputs.ready == 'true'
+        run: echo "Le code a été synchronisé; les variables d’environnement et la base de données du serveur ont été conservées." >> "$GITHUB_STEP_SUMMARY"

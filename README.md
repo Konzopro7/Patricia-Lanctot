@@ -28,7 +28,21 @@ La propriétaire invite une personne dans « Équipe et accès ». Le lien affic
 
 ## Mise en ligne
 
-Le dépôt est publié sur GitHub Pages, qui ne peut pas exécuter l’API ni stocker les rendez-vous. Il faut héberger l’application Node.js sur un service qui prend en charge Node 24, un processus persistant et le stockage durable de fichiers. Un hébergement cPanel convient seulement si l’option « Setup Node.js App » est disponible. L’administration doit être ouverte sur l’origine du serveur Node.js, par exemple https://admin.votre-domaine.example/admin/.
+L’application complète (site public, API et administration) est hébergée sur cPanel avec Node.js. Le workflow GitHub Actions `.github/workflows/deploy-cpanel.yml` synchronise automatiquement chaque push sur `main`, installe les dépendances et redémarre l’application. Il conserve le fichier `.env` et la base de données du serveur.
+
+Pour activer le déploiement automatique, ajoutez dans les paramètres du dépôt GitHub (`Settings > Secrets and variables > Actions`) les secrets suivants :
+
+| Secret | Valeur |
+| --- | --- |
+| `CPANEL_HOST` | Nom d’hôte SSH fourni par l’hébergeur |
+| `CPANEL_USER` | Utilisateur cPanel |
+| `CPANEL_SSH_PORT` | Port SSH; facultatif si le port est `22` |
+| `CPANEL_SSH_PRIVATE_KEY` | Clé privée SSH de déploiement |
+| `CPANEL_KNOWN_HOSTS` | Clé d’hôte SSH vérifiée du serveur |
+
+La clé publique correspondante doit être autorisée dans cPanel (`SSH Access > Manage SSH Keys`). Pour obtenir la valeur de `CPANEL_KNOWN_HOSTS`, exécutez `ssh-keyscan -p PORT HOTE` depuis un terminal et comparez son empreinte à celle fournie par l’hébergeur avant de l’enregistrer. Le workflow vise `/home/konzotec/patricialanctot-app` et l’environnement Node.js `/home/konzotec/nodevenv/patricialanctot-app/22`; adaptez ces chemins si ceux affichés dans cPanel diffèrent. Après l’ajout des secrets, lancez `Deploy cPanel` une fois dans l’onglet GitHub Actions pour déployer le commit actuel. Les prochains pushes sur `main` seront déployés automatiquement.
+
+L’administration doit être ouverte sur l’origine du serveur Node.js, par exemple `https://votre-domaine.example/admin/`.
 
 Si le site public continue d’être servi par GitHub Pages et l’API se trouve sur un autre domaine :
 
