@@ -200,7 +200,7 @@ async function staticFile(req,res,url) {
   else if (url.pathname==='/admin/'||url.pathname==='/admin') relative='admin/index.html';
   else relative=decodeURIComponent(url.pathname).replace(/^\//,'');
   const file=resolve(root,relative);
-  const rootFiles=new Set(['index.html','favicon.png','favicon-tab.png','Logo Patricia Lanctot.png','facebook (1).png','instagram (2).png','tic-toc.png']);
+  const rootFiles=new Set(['index.html','carrieres.html','favicon.png','favicon-tab.png','Logo Patricia Lanctot.png','facebook (1).png','instagram (2).png','tic-toc.png']);
   const publicPath=rootFiles.has(relative)||relative.startsWith('assets/')||relative.startsWith('admin/');
   if (!publicPath||!file.startsWith(root+sep)||relative.includes('..')||relative.startsWith('.')) throw new Error('NOT_FOUND');
   const extension=extname(file).toLowerCase();
