@@ -1,6 +1,6 @@
 # Site de Patricia Lanctot
 
-Le site public reste une page statique. Le serveur Node.js sert aussi la page d’administration, l’API de rendez-vous et la base SQLite. Il faut Node.js 24 ou plus récent.
+Le site public reste une page statique. Le serveur Node.js sert aussi la page d’administration, l’API de rendez-vous et la base SQLite. Il faut Node.js 22.16 ou plus récent.
 
 ## Démarrer en local
 
