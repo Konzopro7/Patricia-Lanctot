@@ -49,6 +49,15 @@ jobs:
           chmod 600 ~/.ssh/cpanel_deploy_key
           printf '%s\n' "$CPANEL_KNOWN_HOSTS" > ~/.ssh/known_hosts
           chmod 600 ~/.ssh/known_hosts
+          host_key_alias="$(awk 'NF >= 3 && $1 !~ /^#/ { print $1; exit }' ~/.ssh/known_hosts)"
+          if [[ "$host_key_alias" == \|1\|* ]]; then
+            host_key_alias="$CPANEL_HOST"
+          fi
+          if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9._\[\]:-]+$ ]]; then
+            echo "CPANEL_KNOWN_HOSTS ne contient pas une entrée OpenSSH valide." >&2
+            exit 1
+          fi
+          echo "CPANEL_HOST_KEY_ALIAS=$host_key_alias" >> "$GITHUB_ENV"
           echo "CPANEL_SSH_PORT=${CPANEL_SSH_PORT:-22}" >> "$GITHUB_ENV"
 
       - name: Synchroniser les fichiers de l’application
@@ -57,7 +66,7 @@ jobs:
         run: |
           set -euo pipefail
           rsync -az \
-            -e "ssh -i ~/.ssh/cpanel_deploy_key -p ${CPANEL_SSH_PORT:-22} -o IdentitiesOnly=yes" \
+            -e "ssh -i ~/.ssh/cpanel_deploy_key -p ${CPANEL_SSH_PORT:-22} -o IdentitiesOnly=yes -o HostKeyAlias=${CPANEL_HOST_KEY_ALIAS}" \
             --exclude='.git/' \
             --exclude='.github/' \
             --exclude='node_modules/' \
@@ -74,7 +83,7 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          ssh -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o IdentitiesOnly=yes "$CPANEL_USER@$CPANEL_HOST" \
+          ssh -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o IdentitiesOnly=yes -o "HostKeyAlias=$CPANEL_HOST_KEY_ALIAS" "$CPANEL_USER@$CPANEL_HOST" \
             "source /home/konzotec/nodevenv/patricialanctot-app/22/bin/activate && cd /home/konzotec/patricialanctot-app && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"
 
       - name: Résumé
