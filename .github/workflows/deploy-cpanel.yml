@@ -94,6 +94,13 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          if [[ ! "$CPANEL_USER" =~ ^[A-Za-z0-9._-]+$ ]]; then
+            echo "CPANEL_USER ne contient pas un nom d’utilisateur valide." >&2
+            exit 1
+          fi
+          deploy_dir="/home/$CPANEL_USER/patricialanctot-app"
+          ssh -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o IdentitiesOnly=yes -o "HostKeyAlias=$CPANEL_HOST_KEY_ALIAS" "$CPANEL_USER@$CPANEL_HOST" \
+            "mkdir -p '$deploy_dir' && command -v rsync >/dev/null"
           rsync -az \
             -e "ssh -i ~/.ssh/cpanel_deploy_key -p ${CPANEL_SSH_PORT:-22} -o IdentitiesOnly=yes -o HostKeyAlias=${CPANEL_HOST_KEY_ALIAS}" \
             --exclude='.git/' \
@@ -105,15 +112,16 @@ jobs:
             --exclude='*.sqlite-shm' \
             --exclude='*.sqlite-wal' \
             --exclude='*.zip' \
-            ./ "$CPANEL_USER@$CPANEL_HOST:/home/konzotec/patricialanctot-app/"
+            ./ "$CPANEL_USER@$CPANEL_HOST:$deploy_dir/"
 
       - name: Installer les dépendances et redémarrer Node.js
         if: steps.config.outputs.ready == 'true'
         shell: bash
         run: |
           set -euo pipefail
+          deploy_dir="/home/$CPANEL_USER/patricialanctot-app"
           ssh -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o IdentitiesOnly=yes -o "HostKeyAlias=$CPANEL_HOST_KEY_ALIAS" "$CPANEL_USER@$CPANEL_HOST" \
-            "source /home/konzotec/nodevenv/patricialanctot-app/22/bin/activate && cd /home/konzotec/patricialanctot-app && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"
+            "source /home/$CPANEL_USER/nodevenv/patricialanctot-app/22/bin/activate && cd '$deploy_dir' && npm ci --omit=dev && mkdir -p tmp && touch tmp/restart.txt"
 
       - name: Résumé
         if: steps.config.outputs.ready == 'true'
