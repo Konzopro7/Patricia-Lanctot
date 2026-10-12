@@ -49,6 +49,8 @@ jobs:
           chmod 600 ~/.ssh/cpanel_deploy_key
           host_key_alias=""
           first_known_host="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | awk 'NF >= 3 && $1 !~ /^#/ && $2 ~ /^(ssh-|ecdsa-|sk-)/ && $3 ~ /^[A-Za-z0-9+/]+={0,2}$/ { print $1; exit }')"
+          expected_fingerprint="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | grep -oE 'SHA256:[A-Za-z0-9+/]+={0,2}' | head -n 1 || true)"
+          expected_public_key="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | awk 'NF >= 2 && $1 ~ /^(ssh-|ecdsa-|sk-)/ && $2 ~ /^[A-Za-z0-9+/]+={0,2}$/ { print $1 " " $2; exit }')"
           if [[ -n "$first_known_host" ]]; then
             printf '%s\n' "$CPANEL_KNOWN_HOSTS" > ~/.ssh/known_hosts
             host_key_alias="$first_known_host"
@@ -56,16 +58,20 @@ jobs:
               host_key_alias="$CPANEL_HOST"
             fi
           else
-            expected_fingerprint="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | grep -oE 'SHA256:[A-Za-z0-9+/]+={0,2}' | head -n 1 || true)"
-            if [[ -z "$expected_fingerprint" ]]; then
-              echo "CPANEL_KNOWN_HOSTS doit contenir des lignes OpenSSH connues ou une empreinte SHA256." >&2
+            if [[ -z "$expected_fingerprint" && -z "$expected_public_key" ]]; then
+              echo "CPANEL_KNOWN_HOSTS doit contenir une entrée known_hosts, une empreinte SHA256 ou une clé publique SSH." >&2
               exit 1
             fi
             scan_file="$(mktemp)"
             ssh-keyscan -T 10 -p "${CPANEL_SSH_PORT:-22}" "$CPANEL_HOST" > "$scan_file" 2>/dev/null || true
-            if ! ssh-keygen -E sha256 -lf "$scan_file" 2>/dev/null | awk -v expected="$expected_fingerprint" '$2 == expected { found = 1 } END { exit !found }'; then
+            if [[ -n "$expected_fingerprint" ]]; then
+              key_matches="$(ssh-keygen -E sha256 -lf "$scan_file" 2>/dev/null | awk -v expected="$expected_fingerprint" '$2 == expected { found = 1 } END { print found + 0 }')"
+            else
+              key_matches="$(awk -v expected="$expected_public_key" '$2 " " $3 == expected { found = 1 } END { print found + 0 }' "$scan_file")"
+            fi
+            if [[ "$key_matches" != 1 ]]; then
               rm -f "$scan_file"
-              echo "L’empreinte SHA256 de CPANEL_KNOWN_HOSTS ne correspond pas au serveur." >&2
+              echo "La clé ou l’empreinte de CPANEL_KNOWN_HOSTS ne correspond pas au serveur." >&2
               exit 1
             fi
             cp "$scan_file" ~/.ssh/known_hosts

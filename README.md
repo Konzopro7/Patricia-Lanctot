@@ -38,7 +38,7 @@ Pour activer le déploiement automatique, ajoutez dans les paramètres du dépô
 | `CPANEL_USER` | Utilisateur cPanel |
 | `CPANEL_SSH_PORT` | Port SSH; facultatif si le port est `22` |
 | `CPANEL_SSH_PRIVATE_KEY` | Clé privée SSH de déploiement |
-| `CPANEL_KNOWN_HOSTS` | Lignes complètes OpenSSH produites par `ssh-keyscan`, ou empreinte `SHA256:…` vérifiée |
+| `CPANEL_KNOWN_HOSTS` | Lignes complètes OpenSSH produites par `ssh-keyscan`, une empreinte `SHA256:…` vérifiée, ou une clé publique SSH vérifiée |
 
 La clé publique correspondante doit être autorisée dans cPanel (`SSH Access > Manage SSH Keys`). Pour obtenir la valeur de `CPANEL_KNOWN_HOSTS`, exécutez `ssh-keyscan -p PORT HOTE` depuis un terminal et comparez son empreinte à celle fournie par l’hébergeur avant de l’enregistrer. Le workflow vise `/home/konzotec/patricialanctot-app` et l’environnement Node.js `/home/konzotec/nodevenv/patricialanctot-app/22`; adaptez ces chemins si ceux affichés dans cPanel diffèrent. Après l’ajout des secrets, lancez `Deploy cPanel` une fois dans l’onglet GitHub Actions pour déployer le commit actuel. Les prochains pushes sur `main` seront déployés automatiquement.
 
