@@ -94,12 +94,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
+          echo "Empreinte de la clé SSH utilisée par GitHub Actions :"
+          ssh-keygen -y -f ~/.ssh/cpanel_deploy_key | ssh-keygen -lf - -E sha256
           if [[ ! "$CPANEL_USER" =~ ^[A-Za-z0-9._-]+$ ]]; then
             echo "CPANEL_USER ne contient pas un nom d’utilisateur valide." >&2
             exit 1
           fi
           deploy_dir="/home/$CPANEL_USER/patricialanctot-app"
-          ssh -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o IdentitiesOnly=yes -o "HostKeyAlias=$CPANEL_HOST_KEY_ALIAS" "$CPANEL_USER@$CPANEL_HOST" \
+          ssh -vv -i ~/.ssh/cpanel_deploy_key -p "${CPANEL_SSH_PORT:-22}" -o BatchMode=yes -o IdentitiesOnly=yes -o "HostKeyAlias=$CPANEL_HOST_KEY_ALIAS" "$CPANEL_USER@$CPANEL_HOST" \
             "mkdir -p '$deploy_dir' && command -v rsync >/dev/null"
           rsync -az \
             -e "ssh -i ~/.ssh/cpanel_deploy_key -p ${CPANEL_SSH_PORT:-22} -o IdentitiesOnly=yes -o HostKeyAlias=${CPANEL_HOST_KEY_ALIAS}" \
