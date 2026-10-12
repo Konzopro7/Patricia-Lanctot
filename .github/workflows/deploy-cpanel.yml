@@ -48,17 +48,22 @@ jobs:
           printf '%s\n' "$CPANEL_SSH_PRIVATE_KEY" > ~/.ssh/cpanel_deploy_key
           chmod 600 ~/.ssh/cpanel_deploy_key
           host_key_alias=""
-          first_known_host="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | awk 'NF >= 3 && $1 !~ /^#/ { print $1; exit }')"
+          first_known_host="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | awk 'NF >= 3 && $1 !~ /^#/ && $2 ~ /^(ssh-|ecdsa-|sk-)/ && $3 ~ /^[A-Za-z0-9+/]+={0,2}$/ { print $1; exit }')"
           if [[ -n "$first_known_host" ]]; then
             printf '%s\n' "$CPANEL_KNOWN_HOSTS" > ~/.ssh/known_hosts
             host_key_alias="$first_known_host"
             if [[ "$host_key_alias" == \|1\|* ]]; then
               host_key_alias="$CPANEL_HOST"
             fi
-          elif [[ "$CPANEL_KNOWN_HOSTS" =~ ^SHA256:[A-Za-z0-9+/]+={0,2}$ ]]; then
+          else
+            expected_fingerprint="$(printf '%s\n' "$CPANEL_KNOWN_HOSTS" | grep -oE 'SHA256:[A-Za-z0-9+/]+={0,2}' | head -n 1 || true)"
+            if [[ -z "$expected_fingerprint" ]]; then
+              echo "CPANEL_KNOWN_HOSTS doit contenir des lignes OpenSSH connues ou une empreinte SHA256." >&2
+              exit 1
+            fi
             scan_file="$(mktemp)"
             ssh-keyscan -T 10 -p "${CPANEL_SSH_PORT:-22}" "$CPANEL_HOST" > "$scan_file" 2>/dev/null || true
-            if ! ssh-keygen -E sha256 -lf "$scan_file" 2>/dev/null | awk -v expected="$CPANEL_KNOWN_HOSTS" '$2 == expected { found = 1 } END { exit !found }'; then
+            if ! ssh-keygen -E sha256 -lf "$scan_file" 2>/dev/null | awk -v expected="$expected_fingerprint" '$2 == expected { found = 1 } END { exit !found }'; then
               rm -f "$scan_file"
               echo "L’empreinte SHA256 de CPANEL_KNOWN_HOSTS ne correspond pas au serveur." >&2
               exit 1
@@ -66,9 +71,6 @@ jobs:
             cp "$scan_file" ~/.ssh/known_hosts
             host_key_alias="$(awk 'NF >= 3 && $1 !~ /^#/ { print $1; exit }' ~/.ssh/known_hosts)"
             rm -f "$scan_file"
-          else
-            echo "CPANEL_KNOWN_HOSTS doit contenir des lignes OpenSSH connues ou une empreinte SHA256 complète." >&2
-            exit 1
           fi
           chmod 600 ~/.ssh/known_hosts
           if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9._\[\]:-]+$ ]]; then
