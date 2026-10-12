@@ -79,10 +79,10 @@ jobs:
             rm -f "$scan_file"
           fi
           chmod 600 ~/.ssh/known_hosts
-          if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9._\[\]:-]+$ ]]; then
+          if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9.-]+$ && ! "$host_key_alias" =~ ^\[[A-Za-z0-9.-]+\]:[0-9]+$ ]]; then
             host_key_alias="$CPANEL_HOST"
           fi
-          if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9._\[\]:-]+$ ]]; then
+          if [[ ! "$CPANEL_HOST" =~ ^[A-Za-z0-9.-]+$ ]]; then
             echo "CPANEL_HOST ne contient pas un nom d’hôte valide." >&2
             exit 1
           fi
