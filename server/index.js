@@ -37,8 +37,13 @@ const requireUser=(req,permission)=>{
   if (!['GET','HEAD'].includes(req.method) && req.headers['x-csrf-token']!==user.csrf) throw new Error('CSRF_INVALID');
   return user;
 };
+let lastRateLimitCleanup=0;
 function rateLimit(key,max,windowMs) {
   const now=Date.now();
+  if (now-lastRateLimitCleanup>600000) {
+    db.prepare('DELETE FROM request_limits WHERE window_start<?').run(now-86400000);
+    lastRateLimitCleanup=now;
+  }
   const row=db.prepare('SELECT window_start,count FROM request_limits WHERE key=?').get(key);
   if (!row||now-row.window_start>windowMs) {
     db.prepare('INSERT INTO request_limits VALUES(?,?,1) ON CONFLICT(key) DO UPDATE SET window_start=excluded.window_start,count=1').run(key,now);
@@ -215,8 +220,10 @@ createServer(async(req,res)=>{
   res.setHeader('x-content-type-options','nosniff');
   res.setHeader('referrer-policy','strict-origin-when-cross-origin');
   res.setHeader('x-frame-options','DENY');
-  const url=new URL(req.url,`http://${req.headers.host||'localhost'}`);
+  if (process.env.NODE_ENV==='production') res.setHeader('strict-transport-security','max-age=31536000');
+  res.setHeader('permissions-policy','camera=(), microphone=(), geolocation=()');
   try {
+    const url=new URL(req.url,`http://${req.headers.host||'localhost'}`);
     if (url.pathname.startsWith('/api/')) await api(req,res,url);
     else if (['GET','HEAD'].includes(req.method)) await staticFile(req,res,url);
     else throw new Error('NOT_FOUND');
