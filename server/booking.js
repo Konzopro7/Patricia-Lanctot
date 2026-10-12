@@ -110,10 +110,7 @@ export function createAppointment(input) {
       id,first,last,email,phone,service,message,location,date,toMinutes(time),slot.startUtc,slot.endUtc,'PENDING',now,now
     );
     enqueue(id,email,'Demande de rendez-vous reçue','Votre demande de rendez-vous a bien été reçue. Elle est en attente de confirmation.');
-    const taxService=service.normalize('NFD').replace(/[\u0300-\u036f]/g,'').match(/impot|credit|gain en capital|fiscal|formulaire|feuillet|rapport de taxes|fiducie/);
-    const notificationEmail=taxService
-      ? process.env.TAX_NOTIFICATION_EMAIL||'impot@patricialanctot.com'
-      : process.env.ACCOUNTING_NOTIFICATION_EMAIL||'comptabilite@patricialanctot.com';
+    const notificationEmail=process.env.ADMIN_NOTIFICATION_EMAIL||'Patricialanctot@hotmail.com';
     enqueue(id,notificationEmail,'Nouvelle demande de rendez-vous',`Nouvelle demande : ${first} ${last}, ${date} à ${time} (${service}).`);
     return {id,status:'PENDING',date,time,duration:settings().duration};
   });
