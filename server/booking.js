@@ -9,7 +9,7 @@ export const SERVICES = [
   'Travailleurs autonomes','Situations particulières','Estimations et calculs fiscaux',
   'Autres formulaires spéciaux','Production de feuillets fiscaux',
   'Déclarations d’impôts de sociétés','Tenue de livres','Rapports de taxes',
-  'Déclarations d’impôts de fiducies','Onvio'
+  'Paie','Déclarations d’impôts de fiducies','Onvio'
 ];
 const LOCATIONS = ['Saint-Hippolyte','Sainte-Julienne','À distance'];
 export const STATUS = ['PENDING','CONFIRMED','REJECTED','CANCELLED','COMPLETED'];
@@ -110,7 +110,7 @@ export function createAppointment(input) {
       id,first,last,email,phone,service,message,location,date,toMinutes(time),slot.startUtc,slot.endUtc,'PENDING',now,now
     );
     enqueue(id,email,'Demande de rendez-vous reçue','Votre demande de rendez-vous a bien été reçue. Elle est en attente de confirmation.');
-    const notificationEmail=process.env.ADMIN_NOTIFICATION_EMAIL||'Patricialanctot@hotmail.com';
+    const notificationEmail=(process.env.ADMIN_NOTIFICATION_EMAIL||'patricialanctot@hotmail.com').trim().toLowerCase();
     enqueue(id,notificationEmail,'Nouvelle demande de rendez-vous',`Nouvelle demande : ${first} ${last}, ${date} à ${time} (${service}).`);
     return {id,status:'PENDING',date,time,duration:settings().duration};
   });
