@@ -72,7 +72,7 @@
     const subject = encodeURIComponent('Inscription à l’infolettre');
     const body = encodeURIComponent(`Bonjour Patricia,\n\nJe souhaite m’inscrire à votre infolettre.\n\nMon adresse courriel : ${email}\n\nMerci !`);
     $('#newsletter-status').textContent = 'Votre application courriel va s’ouvrir avec une demande d’inscription préremplie.';
-    window.location.href = `mailto:comptabilite@patricialanctot.com?subject=${subject}&body=${body}`;
+    window.location.href = `mailto:Patricialanctot@hotmail.com?subject=${subject}&body=${body}`;
   });
 
   const contactForm = $('#contact-form');
@@ -223,7 +223,7 @@
     const subject=encodeURIComponent('Demande d’information — '+fullName);
     const body=encodeURIComponent(`Bonjour Patricia,\n\nNom : ${fullName}\nCourriel : ${fields.messageEmail.value.trim()}\n\n${fields.message.value.trim()}\n\nMerci !`);
     status.textContent='Votre application courriel va s’ouvrir. Vérifiez le message puis envoyez-le.';
-    window.location.href='mailto:comptabilite@patricialanctot.com?subject='+subject+'&body='+body;
+    window.location.href='mailto:Patricialanctot@hotmail.com?subject='+subject+'&body='+body;
   });
   $('#privacy-link').addEventListener('click',event=>{
     event.preventDefault();
