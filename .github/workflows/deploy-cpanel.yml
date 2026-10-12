@@ -80,7 +80,10 @@ jobs:
           fi
           chmod 600 ~/.ssh/known_hosts
           if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9._\[\]:-]+$ ]]; then
-            echo "CPANEL_KNOWN_HOSTS ne contient pas un nom d’hôte OpenSSH valide." >&2
+            host_key_alias="$CPANEL_HOST"
+          fi
+          if [[ ! "$host_key_alias" =~ ^[A-Za-z0-9._\[\]:-]+$ ]]; then
+            echo "CPANEL_HOST ne contient pas un nom d’hôte valide." >&2
             exit 1
           fi
           echo "CPANEL_HOST_KEY_ALIAS=$host_key_alias" >> "$GITHUB_ENV"
