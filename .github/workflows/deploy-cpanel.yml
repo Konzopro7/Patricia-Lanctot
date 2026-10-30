@@ -17,16 +17,15 @@ jobs:
   deploy:
     name: Déployer l’application Node.js
     runs-on: ubuntu-latest
-    env:
-      CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
-      CPANEL_USER: ${{ secrets.CPANEL_USER }}
-      CPANEL_SSH_PORT: ${{ secrets.CPANEL_SSH_PORT }}
-      CPANEL_SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
-      CPANEL_KNOWN_HOSTS: ${{ secrets.CPANEL_KNOWN_HOSTS }}
     steps:
       - name: Vérifier la configuration de déploiement
         id: config
         shell: bash
+        env:
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          CPANEL_KNOWN_HOSTS: ${{ secrets.CPANEL_KNOWN_HOSTS }}
         run: |
           if [[ -n "$CPANEL_HOST" && -n "$CPANEL_USER" && -n "$CPANEL_SSH_PRIVATE_KEY" && -n "$CPANEL_KNOWN_HOSTS" ]]; then
             echo "ready=true" >> "$GITHUB_OUTPUT"
@@ -36,12 +35,29 @@ jobs:
           fi
 
       - name: Récupérer le dépôt
-        if: steps.config.outputs.ready == 'true'
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
+
+      - name: Configurer Node.js
+        uses: actions/setup-node@v7
+        with:
+          node-version: '22'
+          package-manager-cache: false
+
+      - name: Vérifier les tests et les dépendances
+        run: |
+          npm ci
+          npm test
+          npm audit --omit=dev --audit-level=high
 
       - name: Configurer la connexion SSH
         if: steps.config.outputs.ready == 'true'
         shell: bash
+        env:
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_SSH_PORT: ${{ secrets.CPANEL_SSH_PORT }}
+          CPANEL_SSH_PRIVATE_KEY: ${{ secrets.CPANEL_SSH_PRIVATE_KEY }}
+          CPANEL_KNOWN_HOSTS: ${{ secrets.CPANEL_KNOWN_HOSTS }}
         run: |
           set -euo pipefail
           install -m 700 -d ~/.ssh
@@ -92,6 +108,10 @@ jobs:
       - name: Synchroniser les fichiers de l’application
         if: steps.config.outputs.ready == 'true'
         shell: bash
+        env:
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_SSH_PORT: ${{ secrets.CPANEL_SSH_PORT }}
         run: |
           set -euo pipefail
           if [[ ! "$CPANEL_USER" =~ ^[A-Za-z0-9._-]+$ ]]; then
@@ -117,6 +137,10 @@ jobs:
       - name: Installer les dépendances et redémarrer Node.js
         if: steps.config.outputs.ready == 'true'
         shell: bash
+        env:
+          CPANEL_HOST: ${{ secrets.CPANEL_HOST }}
+          CPANEL_USER: ${{ secrets.CPANEL_USER }}
+          CPANEL_SSH_PORT: ${{ secrets.CPANEL_SSH_PORT }}
         run: |
           set -euo pipefail
           deploy_dir="/home/$CPANEL_USER/patricialanctot-app"
